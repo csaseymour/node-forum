@@ -1,0 +1,39 @@
+<div class="controls">
+	<button onclick="newPost()">New Post</button>
+	<h1>{{catagory}}</h1>
+</div>
+<div class="new-postInitial" id="newPost">
+	<form method="POST" class="newpostform" action="/post/newpost?catagory={{catagory}}">
+		<input type="text" name="title" placeholder="Title">
+		<textarea placeholder="Contents..." name="content"></textarea>
+		<input type="submit" value="Sumbit Post!">
+	</form>
+</div>
+<div class="posts">
+	{{#unless posts}}
+		<h1>No posts found for this catagory yet!</h1>
+	{{/unless}}
+	{{#each posts}}
+	<div class="post">
+		<div class="post-preview">
+			<a href="/post/post?id={{this._id}}"><h1 class="post-title">{{this.title}}</h1></a>
+			<p class="post-info">Post by {{this.postedBy.username}} at {{this.createdAt}}</p>
+		</div>
+		<div class="post-stats">
+			<p>Views:{{this.views}}</p>
+			<p>Comments:{{this.comments.length}}</p>
+		</div>
+	</div>
+	{{/each}}
+</div>
+<script>
+	function newPost(){
+		var div = document.getElementById('newPost');
+		if(div.className == "new-postIn"){
+			div.className = "new-postOut";
+		}else{
+			div.className = "new-postIn"
+		}
+	}
+</script>
+</html>

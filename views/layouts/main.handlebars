@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Exmaple App</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+		<div class="catagories">
+			<h1 align="center">Topics</h1>
+			<hr width="90%">
+			<ul>
+				<li><a href="/?catagory=General">General</a></li>
+				<li><a href="/?catagory=Technology">Technology</a></li>
+				<li><a href="/?catagory=Graphics">Graphics</a></li>
+				<li><a href="/?catagory=TVShows">TVShows</a></li>
+			</ul>
+		</div>
+		<div class="middle">
+            {{{body}}}
+        </div>
+        <div class="right">
+			<div class="user">
+				{{#if success_msg}}
+					<p>{{success_msg}}</p>
+				{{/if}}
+				{{#if success}}
+					<p>{{success}}</p>
+				{{/if}}
+				{{#if error}}
+					<p>{{error}}</p>
+				{{/if}}
+				{{#if error_msg}}
+					<p>{{error_msg}}</p>
+				{{/if}}
+				{{#if user}}
+					<img class="profile-picture" src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="PP">
+					<a href="/user/dashboard"><p>{{user.username}}</p></a>
+					<a href="/user/logout">logout</a>
+				{{else}}
+					<form class="login-form" method="POST" action="/user/login">
+						<input type="text" name="username" id="username" placeholder="username"><br>
+						<input type="password" name="password" id="password"><br>
+						<input type="submit" value="login">
+					</form>
+					<a href="/user/register">Register</a>
+				{{/if}}
+			</div>
+			<div class="new-threads">
+				<h1>Latest Posts</h1>
+				<hr width="90%">
+                {{#each latestPosts}}
+				<div class="small-post">
+					<a href="/post/post?id={{this._id}}"><h1>{{this.title}}</h1></a>
+					<p>Post by <strong>{{this.postedBy.username}}</strong> at {{this.createdAt}}</p>
+				</div>
+                {{/each}}
+			</div>
+		</div>
+    </div>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io();
+	</script>
+</body>
+</html>
