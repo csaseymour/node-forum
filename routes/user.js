@@ -122,9 +122,10 @@ router.post('/register', async function(req, res){
 });
 
 router.post('/login', (req, res, next) =>{
+    console.log('login attempt')
     passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/',
+        failureRedirect: '/user/register',
         failureFlash: true,
         successFlash: true
     })(req, res, next);

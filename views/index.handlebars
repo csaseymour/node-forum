@@ -1,0 +1,69 @@
+<div class="options">
+    <a href="#" onclick="layout(this)">☷</a>
+    <h1>{{catagory}}</h1>
+    <a href="#" id="new-post-button" onclick="newpost(this)">New Post</a>
+</div>
+
+<div class="list-posts" id="posts">
+    {{#each posts}}
+    <div class="list-post">
+        <div>
+            <a href="/post/post?id={{this._id}}"><h1>{{this.title}}</h1></a>
+            <p>posted by <a href="#">{{this.postedBy.username}}</a> on {{this.createdAt}}</p>
+        </div>
+        <div class="list-post-stats">
+            <p>👁️‍🗨️ 0</p>
+            <p>💬 {{this.comments.length}}</p>
+        </div>
+    </div>
+    {{/each}}
+</div>
+<div class="new-post" id="newpost">
+    <form method="POST" class="newpostform" action="/post/newpost?catagory={{catagory}}">
+        <input type="text" name="title" placeholder="Post Title">
+        <textarea name="content" placeholder="Post Content" onkeypress="count(this)"></textarea>
+        <p id="charcount">(0/1000)</p>
+        <input type="submit" value="POST!">
+    </form>
+</div>
+<div class="chatbox">
+    <h3 id="online-users"></h3>
+    <div id="chat-messages">
+
+    </div>
+    <input id="message-box" type="text" placeholder="message..." name="chatbox">
+</div>
+<script>
+    function layout(element){
+        var posts = document.getElementById('posts');
+        if(posts.className == "list-posts-single"){
+            posts.className = "list-posts";
+            element.innerHTML = "☷";
+        }else{
+            posts.className = "list-posts-single";
+            element.innerHTML = "☰";
+        }
+    }
+
+    function count(e){
+        var content = e.value;
+        var counter = document.getElementById('charcount');
+        counter.innerHTML = "(" + content.length + "/1000" + ")";
+    }
+
+    function newpost(e){
+        var grid = document.getElementById('grid');
+        var newpost = document.getElementById('newpost');
+        var posts = document.getElementById('posts');
+        if(e.innerHTML == "Cancel"){
+            e.innerHTML = "New Post";
+            posts.style.display = "grid";
+            newpost.style.display = "none";
+        }else{
+            e.innerHTML = "Cancel";
+            posts.style.display = "none";
+            newpost.style.display = "flex";    
+        }
+        
+    }
+</script>

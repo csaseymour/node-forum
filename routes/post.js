@@ -16,7 +16,7 @@ router.get('/post', async function(req, res){
                 var fomatted_date = moment(element.date).format('YYYY-MM-DD, h:mm a');
                 element.date = fomatted_date;
             });
-            res.render('post', {
+            res.render('post', { layout: "new",
                 post: result
             });
         })
@@ -50,14 +50,21 @@ router.post('/newpost', ensureAuthenticated, async function(req, res){
         catagory: req.query.catagory,
         postedBy: req.user._id
     });
-    post.save()
-    .then((result) =>{
+    if(post.content.length > 1000){
+        console.log('content too long');
         res.redirect('/');
-    })
-    .catch((err) =>{
-        console.log(err);
-    });
-    res.redirect('/');
+    }else{
+        post.save()
+        .then((result) =>{
+            console.log(result);
+            res.redirect('/post/post?id=' + result._id);
+        })
+        .catch((err) =>{
+            console.log(err);
+        });
+        //res.redirect('/');
+    }
+    
 });
 
 module.exports = router;

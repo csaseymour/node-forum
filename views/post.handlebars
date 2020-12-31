@@ -1,36 +1,33 @@
+
+<div class="options">
+	<a href="/"><h1>Home</h1></a>
+</div>
 <div class="post">
-	<div class="post-left">
-		<img src="/profile_pictures/{{post.postedBy._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="pp">
-		<h1>{{post.postedBy.username}}</h1>
-	</div>
-	<div class="post-middle">
-		<h1 class="post-title">{{post.title}}</h1>
-		<p clas="post-content">{{post.content}}</p>
-		<p class="post-info">Post at {{post.createdAt}}</p>
+	<h1>{{post.title}}</h1>
+	<h3><a href="#">{{post.postedBy.username}}</a></h3>
+	<p class="post-date">{{post.createdAt}}</p>
+	<hr>
+	<div class="post-content">
+		<p>{{post.content}}</p>
 	</div>
 </div>
 <div class="new-comment">
+	<h1>Comment</h1>
 	<form method="POST" action="/post/newcomment?id={{post._id}}">
-		<input type="submit" value="Sumbit Comment">
 		<textarea name="content"></textarea>
+		<input type="submit" value="submit">
 	</form>
 </div>
-<div class="comments-container">
+<div class="comments">
 	{{#each post.comments}}
-	<div class="comment">
-		<div class="comment-top">
-			<div class="comment-user">
-			<img src="/profile_pictures/{{this.postedBy._id}}.png" onerror="this.src='/profile_pictures/alt.png'" alt="pp">
-			<h1>{{this.postedBy.username}}</h1>
-			</div>
-			<div class="comment-content-container">
-				<img src="">
-				<p>{{this.text}}</p>
-			</div>
+		<div class="comment-user-img">
+			<img src="/profile_pictures/{{this.postedBy._id}}.png">
 		</div>
-		<div class="comment-footer">
-			<p>posted at {{this.date}}</p>
+		<div class="comment-content">
+			<h3><a href="#">{{this.postedBy.username}}</a></h3>
+			<p class="comment-date">{{this.date}}</p>
+			<hr>
+			<p>{{this.text}}</p>
 		</div>
-	</div>
 	{{/each}}
 </div>

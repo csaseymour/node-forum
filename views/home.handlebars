@@ -14,7 +14,7 @@
 		<h1>No posts found for this catagory yet!</h1>
 	{{/unless}}
 	{{#each posts}}
-	<div class="post">
+	<div class="post-list">
 		<div class="post-preview">
 			<a href="/post/post?id={{this._id}}"><h1 class="post-title">{{this.title}}</h1></a>
 			<p class="post-info">Post by {{this.postedBy.username}} at {{this.createdAt}}</p>
@@ -26,6 +26,14 @@
 	</div>
 	{{/each}}
 </div>
+<div class="chat-box">
+	<ul class="chat-messages" id="chat-messages">
+		
+	</ul>
+	<input type="text" name="message" id="message-box" placeholder="Type a message...">	
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/scripts/chat.js"></script>
 <script>
 	function newPost(){
 		var div = document.getElementById('newPost');
