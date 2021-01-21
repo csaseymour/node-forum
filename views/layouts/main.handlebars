@@ -4,61 +4,116 @@
     <meta charset="utf-8">
     <title>Example App</title>
     <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <div class="container">
-		<div class="catagories">
-			<h1 align="center">Topics</h1>
-			<hr width="90%">
-			<ul>
-				<li><a href="/?catagory=General">General</a></li>
-				<li><a href="/?catagory=Technology">Technology</a></li>
-				<li><a href="/?catagory=Graphics">Graphics</a></li>
-				<li><a href="/?catagory=TVShows">TVShows</a></li>
-			</ul>
-		</div>
-		<div class="middle">
-            {{{body}}}
-        </div>
-        <div class="right">
-			<div class="user">
-				{{#if success_msg}}
-					<p>{{success_msg}}</p>
-				{{/if}}
-				{{#if success}}
-					<p>{{success}}</p>
-				{{/if}}
-				{{#if error}}
-					<p>{{error}}</p>
-				{{/if}}
-				{{#if error_msg}}
-					<p>{{error_msg}}</p>
-				{{/if}}
-				{{#if user}}
-					<img class="profile-picture" src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="PP">
-					<a href="/user/dashboard"><p>{{user.username}}</p></a>
-					<a href="/user/logout">logout</a>
-				{{else}}
-					<form class="login-form" method="POST" action="/user/login">
-						<input type="text" name="username" id="username" placeholder="username"><br>
-						<input type="password" name="password" id="password"><br>
-						<input type="submit" value="login">
-					</form>
-					<a href="/user/register">Register</a>
-				{{/if}}
-			</div>
-			<div class="new-threads">
-				<h1>Latest Posts</h1>
-				<hr width="90%">
-                {{#each latestPosts}}
-				<div class="small-post">
-					<a href="/post/post?id={{this._id}}"><h1>{{this.title}}</h1></a>
-					<p>Post by <strong>{{this.postedBy.username}}</strong> at {{this.createdAt}}</p>
-				</div>
-                {{/each}}
-			</div>
-		</div>
+    <div class="toast" id="toast">
+        <p id="toast-message">TOAST</p>
     </div>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-header">
+                <a href="/"><h1>Node-Forum</h1></a>
+                <p>By <a href="https://github.com/csaseymour">Charlie Seymour</a></p>
+            </div>
+            <div class="nav-links">
+                <a href="/"><hr>Forums<hr style="margin-left: auto;"></a>
+                <a href="/user/rules"><hr>Rules<hr style="margin-left: auto;"</a>
+                <a href="/user/members"><hr>Members<hr style="margin-left: auto;"></a>
+            </div>
+            <div class="user-container">
+                {{#if user}}
+                <img class="image" src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png'">
+                <div class="user-menu">
+                    <h1>{{user.username}}</h1>
+                    <div class="user-dropdown">
+                        <a href="/user/dashboard">Profile</a>
+                        <a href="/user/messages">Messages</a>
+                        <a href="/user/logout">Logout</a>
+                    </div>
+                </div>
+                {{#if user.notification.unread}}
+                <i id="not-icon" style="cursor: pointer;" class="material-icons">notifications_active</i><p>[{{user.notification.notifications.length}}]</p>
+                {{else}}
+                <i id="not-icon" style="cursor: pointer;" class="material-icons">notifications_none</i>
+                {{/if}}
+                <div class="notifications-hidden" id="notifications">
+                    {{#if user.notification.notifications}}
+                        {{#each user.notification.notifications}}
+                            <div class="notification">
+                                <p>{{this.notificationType}} </br> {{this.message}}</p>
+                                <i style="color: red; cursor: pointer;" class="not-remove material-icons" id="{{this._id}}">close</i>
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                </div>
+                {{else}}
+                <button class="button" onclick="display('login')">Login</button>
+                <button class="button" onclick="display('register')">Register</button>
+                {{/if}}
+            </div>
+        </div>
+    </nav>
+    <main>  
+        {{#if login_error}}
+        <div class="overlay-visible" id="login">
+            <div class="container-column center">
+                <p>{{login_error}}</p>
+            </div>
+        {{else}}
+        <div class="overlay-hidden" id="login">
+        {{/if}}
+            <div class="container-column">
+                <form method="POST" action="/user/login" class="center">
+                    <input type="text" name="username" placeholder="username">
+                    <input type="password" name="password" placeholder="password">
+                    <div>
+                        <input class="button" type="submit" value="login">
+                        <a class="button" href="#" onclick="display('login')">cancel</a>
+                    </div>
+                    <a href="/user/passwordreset">reset password</a>
+                </form>    
+            </div>
+        </div>
+        {{#if register_errors}}
+        <div class="overlay-visible" id="register">
+            <div class="container-column center">
+                {{#each register_errors}}
+                <p>{{this.msg}}</p>
+                {{/each}}
+            </div>
+        {{else}}
+        <div class="overlay-hidden" id="register">
+        {{/if}}
+            <div class="container-column">
+                <form method="POST" action="/user/register" class="center">
+                    <input type="text" name="username" placeholder="username" {{#if username}} value="{{username}}" {{/if}}>
+                    <input type="text" name="email" placeholder="email" {{#if email}} value="{{email}}" {{/if}}>
+                    <input type="password" name="password" placeholder="password">
+                    <input type="password" name="password2" placeholder="match password">
+                    <div>
+                        <input class="button" type="submit" value="register">
+                        <a class="button" href="#" onclick="display('register')">cancel</a>
+                    </div>
+                </form>    
+            </div>
+        </div>
+        {{{body}}}
+    </main>
+    <script>
+        function display(id){
+            var window2display = document.getElementById(id);
+            if(window2display.classList.contains('overlay-hidden')){
+                window2display.classList.remove('overlay-hidden');
+                window2display.classList.add('overlay-visible');
+            }else{
+                window2display.classList.remove('overlay-visible');
+                window2display.classList.add('overlay-hidden');
+            }
+        }
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/socket.js"></script>
 </body>
 </html>

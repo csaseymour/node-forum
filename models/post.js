@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema({
     title: String,
     content: String,
-    catagory: String,
+    category: String,
     views: Number,
     postedBy: {
         type: mongoose.Schema.Types.ObjectId, 
@@ -18,7 +18,8 @@ const postSchema = new Schema({
             ref: 'User'
         },
         date: Date
-    }]
+    }],
+    recentreply: String
 }, {timestamps: true});
 postSchema.plugin(mongooseDateFormat);
 const Post = mongoose.model('Post', postSchema);

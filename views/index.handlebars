@@ -1,69 +1,44 @@
-<div class="options">
-    <a href="#" onclick="layout(this)">☷</a>
-    <h1>{{catagory}}</h1>
-    <a href="#" id="new-post-button" onclick="newpost(this)">New Post</a>
-</div>
-
-<div class="list-posts" id="posts">
-    {{#each posts}}
-    <div class="list-post">
-        <div>
-            <a href="/post/post?id={{this._id}}"><h1>{{this.title}}</h1></a>
-            <p>posted by <a href="#">{{this.postedBy.username}}</a> on {{this.createdAt}}</p>
+<div class="container-column-boff">
+    <h1 class="container-header-row">Categories</h1>
+    <div class="grid-2">
+        {{#each categories}}
+        <div class="category">
+            <a href="/post/category?category={{this.category}}"><h1>{{this.category}}</h1></a>
+            <p>Latest Thread: <a class="category-post-link" href="/post/post?id={{this.id}}">{{this.title}}</a></p>
+            <p>Latest Reply: <a href="/post/post?id={{this.latestreply.id}}">{{this.latestreply.username}}</a></p>
+            <P>💬 {{this.threads}}</P>
         </div>
-        <div class="list-post-stats">
-            <p>👁️‍🗨️ 0</p>
-            <p>💬 {{this.comments.length}}</p>
+        {{/each}}   
+    </div>
+</div>
+<div class="chatbox" id="chatbox">
+    <div class="container-column-boff">
+        <div class="container-header-row">
+            <h3>Live Chat</h3>
+            <i class="material-icons" style="margin-left: auto;" onclick="display('chat-settings')">settings</i>
+        </div>
+        <div class="chatbox-messages" id="chat-messages">
+            {{#unless user}}
+                <p>You must be logged in to view/use chat</p>
+            {{/unless}}
+        </div>
+        <div style="display: flex; flex-direction: row;">
+            <input type="text" name="message" placeholder="message..." id="message-box">
+            <i class="material-icons" style="padding: 1rem; cursor:pointer;">reply</i>
+        </div>
+          
+    </div>
+    <div class="container-column-boff margin-left">
+        <h3 class="container-header-row">online users</h3>
+        <div class="online-users-list" id="users">
+            
         </div>
     </div>
-    {{/each}}
 </div>
-<div class="new-post" id="newpost">
-    <form method="POST" class="newpostform" action="/post/newpost?catagory={{catagory}}">
-        <input type="text" name="title" placeholder="Post Title">
-        <textarea name="content" placeholder="Post Content" onkeypress="count(this)"></textarea>
-        <p id="charcount">(0/1000)</p>
-        <input type="submit" value="POST!">
+<div class="overlay-hidden" id="chat-settings">
+    <form method="POST" action="/user/settings">
+        <input type="text" name="color" placeholder="chat-color: (HEX)...">
+        <input type="submit" value="update" class="button">
+        <button type="button" onclick="display('chat-settings')" class="button">Cancel</button>
     </form>
 </div>
-<div class="chatbox">
-    <h3 id="online-users"></h3>
-    <div id="chat-messages">
-
-    </div>
-    <input id="message-box" type="text" placeholder="message..." name="chatbox">
-</div>
-<script>
-    function layout(element){
-        var posts = document.getElementById('posts');
-        if(posts.className == "list-posts-single"){
-            posts.className = "list-posts";
-            element.innerHTML = "☷";
-        }else{
-            posts.className = "list-posts-single";
-            element.innerHTML = "☰";
-        }
-    }
-
-    function count(e){
-        var content = e.value;
-        var counter = document.getElementById('charcount');
-        counter.innerHTML = "(" + content.length + "/1000" + ")";
-    }
-
-    function newpost(e){
-        var grid = document.getElementById('grid');
-        var newpost = document.getElementById('newpost');
-        var posts = document.getElementById('posts');
-        if(e.innerHTML == "Cancel"){
-            e.innerHTML = "New Post";
-            posts.style.display = "grid";
-            newpost.style.display = "none";
-        }else{
-            e.innerHTML = "Cancel";
-            posts.style.display = "none";
-            newpost.style.display = "flex";    
-        }
-        
-    }
-</script>

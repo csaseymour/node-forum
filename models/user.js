@@ -6,7 +6,18 @@ const userSchema = new Schema({
     password: String,
     email: String,
     status: String,
-    points: Number
+    points: Number,
+    level: Number,
+    chatcolor: String,
+    notification: {
+        unread: Boolean,
+        notifications:[
+            {
+                notificationType: String,
+                message: String
+            }
+        ]
+    }
 }, {timestamps: true});
 
 const User = mongoose.model('User', userSchema);

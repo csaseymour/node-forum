@@ -1,0 +1,9 @@
+<div class="container-column-boff">
+    <h1 class="container-header-row">Members</h1>
+    <div class="grid-3 padding">
+        {{#each users}}
+            <p><a href="/user/user?id={{this.id}}">{{this.username}}</a></p>
+        {{/each}}      
+    </div>
+</div>
+

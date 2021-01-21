@@ -1,0 +1,16 @@
+notification: {
+    unread: Boolean,
+    notifications:[
+        {
+            _id: String,
+            nType: String,
+            nMessage: String
+        }
+    ]
+}
+
+
+
+
+
+nType = ['new message', 'new comment', 'new thread'];

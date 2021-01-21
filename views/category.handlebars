@@ -1,0 +1,36 @@
+<div class="container-column-boff">
+    <div class="container-header-row">
+        <h1>{{category}}</h1>
+        <button class="button" onclick="display('newthread')" style="margin-left: auto">New Thread</button>
+    </div>
+    <div class="grid-2">
+    {{#each posts}}
+        <div class="category">
+            <a href="/post/post?id={{this._id}}"><h1>{{this.title}}</h1></a>
+            <p>{{this.postedBy.username}} at {{this.createdAt}}</p>
+            <p>💬 {{this.comments.length}}</p>
+        </div>
+    {{/each}}
+    </div>
+</div>
+{{#if error_messages}}
+<div class="overlay-visible" id="newthread">
+    <div class="container-column center">
+        {{#each error_messages}}
+        <p>{{this.msg}}</p>
+        {{/each}}
+    </div>
+{{else}}
+<div class="overlay-hidden" id="newthread">
+{{/if}}
+    <div class="new-thread-container">
+        <form method="POST" action="/post/newpost?category={{category}}" style="width: 50vw; height: 50vh;">
+            <input type="text" name="title" placeholder="title">
+            <textarea name="content" placeholder="content" style="resize: vertical;"></textarea>
+            <div>
+                <input  class="button" type="submit" value="Post!">
+                <button type="button" class="button" onclick="display('newthread')">Cancel</button>
+            </div>
+        </form>    
+    </div>
+</div>

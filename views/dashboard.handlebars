@@ -1,15 +1,15 @@
-<div class="dashboard-container">
-    <h1 align="center">Dashboard</h1>
-    <div class="row">
-        <div class="dash-profile-picture">
-            <img src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="pp">
-            <form enctype="multipart/form-data" method="POST" action="/user/upload" style="display: flex; flex-direction:column;">
-                <input type="file" value="Change Profile Picture" name="file">
-                <input type="submit" style="width: 5rem;" value="upload">
-            </form>
-        </div>  
-        <div class="dash-user-info">
-            <h1>Username:<span style="color: lightseagreen; font-weight:normal"> {{user.username}}</span></h1>
+<div class="container-column-boff">
+    <h1 class="container-header-row">Dashboard</h1>
+    <div class="container-row-boff margin-top">
+        <div>
+            <img class="image-big" src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="pp">
+            <form enctype="multipart/form-data" method="POST" action="/user/upload">
+                <input class="button" type="file" value="Change Profile Picture" name="file">
+                <input class="button" type="submit" style="width: 5rem;" value="upload">
+            </form> 
+        </div>
+        <div>
+            <h1>Username:<span style="color:{{user.chatcolor}}; font-weight:normal"> {{user.username}}</span></h1>
             <h1>Status:{{user.status}}</h1>
         </div>
     </div>
