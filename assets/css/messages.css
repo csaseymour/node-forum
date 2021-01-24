@@ -1,0 +1,65 @@
+.messages{
+    height: 75vh;
+}
+
+.message-users-container{
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+    background-color: var(--main-background);
+    border-right: #444cbc 2px solid;
+}
+
+.message-user{
+    font-size: 1rem;
+    color: white;
+    transition: 0.5s;
+    margin-left: 2px;
+}
+
+.message-user-active{
+    margin-left: 2px;
+    font-size: 1rem;
+    color: crimson;
+    transition: 0.5s;
+}
+
+.message-user:hover{
+    color: crimson;
+}
+
+.message-user-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem;
+}
+
+.messages-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.messages-list{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    word-break: break-all;
+    padding: 1rem;
+    width: 100%;
+}
+
+.message-reply{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: auto;
+}
+
+.message-reply form textarea{
+    background-color: var(--main-background);
+}

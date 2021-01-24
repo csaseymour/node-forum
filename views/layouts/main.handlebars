@@ -59,7 +59,7 @@
         {{#if login_error}}
         <div class="overlay-visible" id="login">
             <div class="container-column center">
-                <p>{{login_error}}</p>
+                <p class="error_message">{{login_error}}</p>
             </div>
         {{else}}
         <div class="overlay-hidden" id="login">
@@ -80,7 +80,7 @@
         <div class="overlay-visible" id="register">
             <div class="container-column center">
                 {{#each register_errors}}
-                <p>{{this.msg}}</p>
+                <p class="error_message">{{this.msg}}</p>
                 {{/each}}
             </div>
         {{else}}
@@ -101,6 +101,8 @@
         </div>
         {{{body}}}
     </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/socket.js"></script>
     <script>
         function display(id){
             var window2display = document.getElementById(id);
@@ -113,7 +115,5 @@
             }
         }
     </script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/scripts/socket.js"></script>
 </body>
 </html>

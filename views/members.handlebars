@@ -1,9 +1,33 @@
 <div class="container-column-boff">
-    <h1 class="container-header-row">Members</h1>
+    <div class="container-header-row">
+        <h1>Members</h1>
+        <input type="text" name="search" id="searchMembers" placeholder="search members..." style="margin-left: 1rem; border-radius: 10px;">
+    </div>
+    
     <div class="grid-3 padding">
         {{#each users}}
-            <p><a href="/user/user?id={{this.id}}">{{this.username}}</a></p>
+            <div class="container-row-boff">
+                <img class="image" src="/profile_pictures/{{this.id}}.png" onerror="this.src='/profile_pictures/alt.png'">
+                <div class="container-column-boff padding">
+                    <a class="members" href="/user/user?id={{this.id}}">{{this.username}}</a>
+                </div>
+            </div>
         {{/each}}      
     </div>
 </div>
+
+<script>
+
+    var users = document.getElementsByClassName('members');
+
+    $('#searchMembers').on('keydown', function(e){
+        for(x = 0; x < users.length; x++){
+            if(users[x].innerHTML.toLowerCase().includes($('#searchMembers').val().toLowerCase())){
+               $(users[x]).parent().parent().css("display", "flex");
+            }else{
+                $(users[x]).parent().parent().css("display", "none");
+            }
+        }
+    });
+</script>
 

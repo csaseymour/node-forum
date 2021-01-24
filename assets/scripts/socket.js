@@ -100,6 +100,15 @@ $(document).ready(function(){
         }
     });
 
+    $("#reply-button").click(function(){
+        if($('#message-box').val().length == 0){
+            $('#message-box').val("");
+        }else{
+            socket.emit('chat message', $('#message-box').val());
+            $('#message-box').val("");
+        }
+    });
+
     $('#not-icon').click( function(){
         if(notifications.classList.contains('notifications-hidden')){
             socket.emit('notification', "anything really");

@@ -45,7 +45,7 @@ input{
 }
 
 textarea{
-    background-color: var(--background);
+    background-color: var(--main-background);
     border: none;
     color: white;
     padding: 1rem;
@@ -108,7 +108,6 @@ a{
     display: flex;
     flex-direction: row;
     background-color: var(--background);
-    padding: 1rem;
     border: none;
 }
 
@@ -160,6 +159,7 @@ a{
 .grid-3{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1rem;
 }
 
 .margin{
@@ -601,4 +601,14 @@ main{
 
 .toast p{
     color: var(--special);
+}
+
+.error_message{
+    color: crimson;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.error_message::before{
+    content: "*";
 }

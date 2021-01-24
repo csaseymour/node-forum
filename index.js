@@ -58,6 +58,7 @@ app.use(async(req, res, next) =>{
     res.locals.register_errors = req.flash('register_errors');
     res.locals.error_messages = req.flash('error_messages');
     res.locals.reset_errors = req.flash('reset_errors');
+    res.locals.success_message = req.flash('success_message');
     if(req.user){
         await User.findOne({_id: req.user._id})
             .lean()

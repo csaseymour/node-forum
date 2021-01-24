@@ -1,7 +1,41 @@
-<div class="container-column-boff padding center">
-    <div class="message-list">
-        {{#each message}}
-            <button>{{this.user}}</button>
+<head>
+    <link rel="stylesheet" type="text/css" href="../css/messages.css">
+</head>
+
+<div class="container-row-boff messages">
+    <div class="message-users-container">
+        <h3 align="center">Messages</h3>
+        {{#each messages}}
+        <div class="message-user-container">
+        <img class="image-small" src="/profile_pictures/{{this.user._id}}.png" onerror="this.src='/profile_pictures/alt.png'">
+        {{#if this.active}}
+        <a href="/user/messages?id={{this._id}}" class="message-user-active">{{this.user.username}}</a>
+        {{else}}
+        <a href="/user/messages?id={{this._id}}" class="message-user">{{this.user.username}}</a>
+        {{/if}}
+        </div>
         {{/each}}
     </div>
+    <div class="messages-container">
+        <div class="messages-list" id="messages-list">
+        {{#if message}}
+        {{#each message}}
+            <p><span style="font-weight: bold;color: {{this.user.chatcolor}}">{{this.user.username}}:</span> {{this.message}}</p>
+        {{/each}}
+        </div>
+        <div class="message-reply">
+            <form method="POST" action="/user/message?id={{messageid}}" style="display: flex; flex-direction: row;">
+                <textarea name="message" placeholder="message..." style="width: 100%;resize: vertical;"></textarea>
+                <input type="submit" class="button" value="send">
+            </form>
+        </div>
+        {{/if}}
+    </div>
 </div>
+
+<script>
+    $( document ).ready(function() {
+        var messagelist = document.getElementById('messages-list');
+        messagelist.scrollTop = messagelist.scrollHeight;
+    });
+</script>

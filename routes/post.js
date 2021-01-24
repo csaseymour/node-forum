@@ -1,6 +1,6 @@
 const express = require('express');
 var moment = require('moment');
-const multer  = require('multer')
+const multer  = require('multer');
 const Post = require('../models/post');
 const { ensureAuthenticated } = require('../strategies/auth');
 const router = express.Router();

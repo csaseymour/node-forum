@@ -1,7 +1,7 @@
 <div class="container-column-boff">
     <h1 class="container-header-row">Dashboard</h1>
     <div class="container-row-boff margin-top">
-        <div>
+        <div style="margin-right: 5px;">
             <img class="image-big" src="/profile_pictures/{{user._id}}.png" onerror="this.src='/profile_pictures/alt.png';" alt="pp">
             <form enctype="multipart/form-data" method="POST" action="/user/upload">
                 <input class="button" type="file" value="Change Profile Picture" name="file">
@@ -9,8 +9,19 @@
             </form> 
         </div>
         <div>
-            <h1>Username:<span style="color:{{user.chatcolor}}; font-weight:normal"> {{user.username}}</span></h1>
-            <h1>Status:{{user.status}}</h1>
+            {{#each error_messages}}
+                <p class="error_message">{{this.msg}}</p>
+            {{/each}}
+            <form method="POST" action="/user/updateuser">
+                <h1>Username:<input type="text" name="username" value="{{user.username}}" style="font-size: 1rem;text-align: left"></h1>
+                <h2>Status:<input type="text" name="status" {{#if user.status}}value="{{user.status}}" {{else}} placeholder="status message here" {{/if}}style="font-size: 1rem;text-align: left"></h2>
+                <input type="submit" class="button" value="Update Settings">
+            </form>
+            {{#if success_message}}
+                {{#each success_message}}
+                    <p>{{this.msg}}</p>
+                {{/each}}
+            {{/if}}
         </div>
     </div>
 </div>

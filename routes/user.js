@@ -4,7 +4,7 @@ const Messages = require('../models/messages');
 const flash = require('connect-flash');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const multer  = require('multer')
+const multer  = require('multer');
 const { ensureAuthenticated } = require('../strategies/auth');
 var nodemailer = require('nodemailer');
 var router = express.Router();
@@ -32,13 +32,61 @@ var transporter = nodemailer.createTransport({
 //GET'S============================================
 router.get('/user', async (req, res) =>{
     var id = req.query.id;
-    await User.find({_id: id})
+    await User.findOne({_id: id})
         .lean()
         .then((result) =>{
             res.render('user', {
-                member: result[0]
+                member: result
             });
         });
+});
+
+router.get('/messages', async (req, res) =>{
+    //lets find all the messages the user has
+    var messages;
+    var message;
+    var messageid;
+    if(req.query.id){
+        messageid = req.query.id.toString();
+        await Messages.findOne({_id: req.query.id})
+            .populate('messages.user')
+            .lean()
+            .then((result) =>{
+                if(result){
+                    message = result.messages
+                }
+            })
+            .catch(err => console.log(err));
+    }
+    var messages;
+    await Messages.find({$or:[{user1: req.user._id}, {user2: req.user._id}]})
+        .populate('user1')
+        .populate('user2')
+        .lean()
+        .then((result) =>{
+            if(result){
+                messages = result;
+            }else{
+                res.render('messages');
+            }
+        })
+        .catch(err => console.log(err));
+    await Promise.all(messages.map(async(message) =>{
+        //we have to cast the userid to a string otherwise the condition will always return false for some reason...
+        if(message.user1._id.toString() == req.user._id.toString()){
+            message.user = message.user2;
+        }else{
+            message.user = message.user1;
+        }
+    }));
+    if(messageid){
+        await Promise.all(messages.map(async (message) =>{
+            if(message._id.toString() == messageid.toString()){
+                message.active = true;
+            } 
+        }));
+    }
+    res.render('messages', {messages: messages, message: message, messageid: messageid});
 });
 
 router.get('/', function(req, res){
@@ -63,36 +111,6 @@ router.get('/rules', (req, res) =>{
 
 router.get('/dashboard', ensureAuthenticated, (req, res) =>{
     res.render('dashboard');
-});
-
-router.get('/message', async (req, res) =>{
-    await Messages.findOne({_id: req.query.id})
-        .lean()
-        .populate('user1')
-        .populate('user2')
-        .populate('messages.user')
-        .then((result) =>{
-            Promise.all(result.messages.map(async(element) =>{
-                if(element.user._id.toString() == req.user._id){
-                    element.me = true;
-                }else{
-                    element.me = false;
-                }
-            }));
-            res.render('message',{
-                message: result
-            });
-        })
-        .catch(err => console.log(err))
-})
-
-router.get('/messages', async (req, res) =>{
-    var users = await  getUsers();
-    var result = await getMessages(req.user._id);
-    res.render('messages', {
-        messages: result,
-        users: users
-    })
 });
 
 router.get('/passwordreset', async (req, res) =>{
@@ -210,85 +228,6 @@ router.post('/upload', ensureAuthenticated, upload.single('file'), (req, res) =>
     res.redirect('/user/dashboard')
 });
 
-router.post('/message', (req, res) =>{
-    var em = req.app.get('notEvent');
-    var userid;
-    if(req.query.id){
-        userid = req.query.id;
-    }else{
-        userid = req.body.id;
-    }
-    if(req.body.messageid){
-        Messages.findOne({_id: req.body.messageid})
-            .populate('user1')
-            .populate('user2')
-            .then((result) =>{
-                msg = {
-                    user: req.user._id,
-                    message: req.body.message
-                }
-                result.messages.push(msg);
-                result.save();
-                if(result.user1._id.toString() == req.user._id.toString()){
-                    notify(result.user2._id, {notificationType: "message from", message: req.user.username});
-                    em.emit('toast', {messageid: req.body.messageid, id: result.user2._id, nType: "new message", message: result.user2.username});
-                }else{
-                    notify(result.user1._id, {notificationType: "message from", message: req.user.username});
-                    em.emit('toast', {messageid: req.body.messageid, id: result.user1._id, nType: "new message", message: result.user1.username});
-                }
-                res.redirect('/user/message?id=' + req.body.messageid);
-            })
-            .catch(err => console.log(err));
-    }else{
-        msg = {
-            user: req.user._id,
-            message: req.body.message
-        }
-        Messages.findOne({user1: req.user._id, user2: userid})
-            .then((result) =>{
-                if(result){
-                    //messages already exist
-                    result.messages.push(msg);
-                    result.save();
-                    notify(userid, {notificationType: "message from", message: req.user.username});
-                    em.emit('toast', {messageid: result._id, id: userid, message: "new message"});
-                    res.render('messages');
-                }else{
-                    Messages.findOne({user1: userid, user2: req.user._id})
-                        .then((result) =>{
-                            if(result){
-                                //messages already exist
-                                result.messages.push(msg);
-                                result.save();
-                                notify(userid, {notificationType: "message from", message: req.user.username});
-                                res.render('messages');
-                            }else{
-                                //need to create new message
-                                const message = new Messages({
-                                    user1: userid,
-                                    user2: req.user._id,
-                                    messages: [
-                                        {
-                                            user: req.user._id,
-                                            message: req.body.message
-                                        }
-                                    ]
-                                });
-                                message.save()
-                                    .then((result) =>{
-                                        notify(userid, {notificationType: "message from", message: req.user.username});
-                                    })
-                                    .catch(err => console.log(err));
-                                res.render('messages');
-                            }
-                        })
-                        .catch(err => console.log(err));
-                    }
-            }) 
-            .catch(err => console.log(err)); 
-    }
-});
-
 router.post('/settings', (req, res) =>{
     User.findOne({_id: req.user._id})
         .then((result) =>{
@@ -366,6 +305,110 @@ router.post('/passwordreset', async (req, res) =>{
         .catch(err => console.log(err));
 });
 
+router.post('/updateuser', async (req, res) =>{
+    const {username, status} = req.body;
+    errors = [];
+    //set username to lowercase
+    username.toLowerCase()
+    if(username.length < 2){
+        errors.push({msg: "username needs to be at least 2 characters long"});
+    }
+    if(username.length > 12){
+        errors.push({msg: "username cannot be larger then 12 characters"});
+    }
+    if(/[^a-zA-Z0-9]/.test(username)) {
+        errors.push({msg: "username cannot contain any special characters!"});
+    }
+    if(status.length > 50){
+        errors.push({msg: "status cannot be longer then 50 characters"});
+    }
+    if(errors.length > 0){
+        req.flash("error_messages", errors);
+        res.redirect('/user/dashboard');
+    }else{
+        User.findOne({_id: req.user._id})
+            .then((result) =>{
+                result.username = username;
+                result.status = status;
+                result.save();
+                req.flash('success_message', {msg: "User Settings have been updated!"});
+                res.redirect('/user/dashboard');
+            })
+            .catch(err => console.log(err));
+    }
+    
+});
+
+router.post('/message', async (req, res) =>{
+    if(req.query.id){
+        await Messages.findOne({_id: req.query.id})
+            .then((result) =>{
+                if(result){
+                    var msg = {
+                        user: req.user._id,
+                        message: req.body.message,
+                        date: Date.now()
+                    }
+                    result.messages.push(msg);
+                    result.save()
+                        .then((result) =>{
+                            res.redirect('/user/messages?id=' + req.query.id);
+                        })
+                        .catch(err => console.log(err));
+                }else{
+                    res.redirect('/user/message');
+                }
+            })
+            .catch(err => console.log(err));
+    }else{
+        res.redirect('/user/messages');
+    }
+});
+
+router.post('/usermessage', async (req, res) =>{
+    var userid = req.query.id;
+    var messageid;
+    await Messages.findOne({$or:[{$and:[{user1:req.user._id}, {user2:userid}]}, {$and:[{user1:userid}, {user2:req.user._id}]}]})
+        .then((result) =>{
+            if(result){
+                //we have a conversation already
+                var msg = {
+                    user: req.user._id,
+                    message: req.body.message,
+                    date: Date.now()
+                }
+                result.messages.push(msg);
+                result.save()
+                    .then((result) =>{
+                        console.log(result);
+                        messageid = result._id.toString();
+                    })
+                    .catch(err => console.log(err));
+            }else{
+                //we don't have a converstation yet so we have to make a new one now.
+                var conversation = new Messages({
+                    user1: req.user._id,
+                    user2: userid,
+                    messages: []
+                });
+                var msg = {
+                    user: req.user._id,
+                    message: req.body.message,
+                    date: Date.now()
+                }
+                conversation.messages.push(msg);
+                conversation.save()
+                    .then((result) =>{
+                        console.log(result);
+                        messageid = result._id.toString();
+                    })
+                    .catch(err => console.log(err));
+            }
+        })
+        .catch(err => console.log(err));
+    res.redirect("/user/messages");
+});
+
 
 //helper functions
 async function getUsers(){
@@ -383,43 +426,6 @@ async function getUsers(){
         })
         .catch(err => console.log(err));
     return users;
-}
-
-async function getMessages(id){
-    var messages = [];
-    await Messages.find({ $or:[{user1: id}, {user2: id}]})
-        .lean()
-        .populate('user1')
-        .populate('user2')
-        .then((result) =>{  
-            Promise.all(result.map( async(element) =>{
-                if(element.user1._id.toString() == id.toString()){
-                    var msg = {
-                        id: element._id,
-                        user: element.user2.username
-                    }
-                    messages.push(msg);
-                }else{
-                    var msg = {
-                        id: element._id,
-                        user: element.user1.username
-                    }
-                    messages.push(msg);
-                }
-            }));
-        })
-        .catch(err => console.log(err));
-    return messages;
-}
-
-async function notify(id, note){
-    await User.findOne({_id: id})
-        .then((result) =>{
-            result.notification.unread = true;
-            result.notification.notifications.push(note);
-            result.save();
-        })
-        .catch(err => console.log(err));
 }
 
 async function makecode(length) {

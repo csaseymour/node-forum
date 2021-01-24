@@ -1,13 +1,14 @@
 <div class="container-column-boff">
     <h1 class="container-header-row">{{member.username}}</h1>
     <img style="width: 10rem;" src="/profile_pictures/{{member._id}}.png" onerror="this.src='/profile_pictures/alt.png'">
+    <h3>{{member.status}}</h3>
     <div>
         <button class="button" onclick="display('message')">Message</button>
     </div>
 </div>
 
 <div class="overlay-hidden" id="message">
-    <form method="POST" action="/user/message?id={{member._id}}">
+    <form method="POST" action="/user/usermessage?id={{member._id}}">
         <textarea name="message"></textarea>
         <input type="submit" class="button" value="send">
         <button type="button" class="button" onclick="display('message')">Cancel</button>
